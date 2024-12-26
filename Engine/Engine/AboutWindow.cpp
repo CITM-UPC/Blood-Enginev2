@@ -25,7 +25,7 @@ void AboutWindow::DrawWindow()
     ImGui::Text("Description:");
     ImGui::TextWrapped("BloodEngine is a 3D game engine developed in C++ with OpenGL, currently capable of rendering geometry with a range of controls and information displays. Forked from: https://github.com/CITM-UPC/SpectraEngine" );
     ImGui::Spacing();
-    HyperLink("GitHub", "https://github.com/CITM-UPC/SpectraEngine");
+    HyperLink("GitHub", "https://github.com/CITM-UPC/Blood-Enginev2");
     ImGui::Spacing();
 
     ImGui::Separator();
@@ -33,9 +33,7 @@ void AboutWindow::DrawWindow()
     // Team Members
     ImGui::Text("Team Members:");
 	ImGui::Spacing();
-    HyperLink("Guillem Alqueza", "https://github.com/guillemalqueza");
-    HyperLink("Miguel Iglesias", "https://github.com/MiguelIglesiasAbarca");
-    HyperLink("Lluc Cid", "https://github.com/Lluccib");
+    HyperLink("Hugo Castano", "https://github.com/LazyRacoonDev");
     ImGui::Spacing();
 
     ImGui::Separator();
