@@ -34,6 +34,8 @@ void AboutWindow::DrawWindow()
     ImGui::Text("Team Members:");
 	ImGui::Spacing();
     HyperLink("Hugo Castano", "https://github.com/LazyRacoonDev");
+    HyperLink("Sergio Corona", "https://github.com/seregero00");
+    HyperLink("Bernat Cifuentes", "https://github.com/ItsBernii");
     ImGui::Spacing();
 
     ImGui::Separator();
