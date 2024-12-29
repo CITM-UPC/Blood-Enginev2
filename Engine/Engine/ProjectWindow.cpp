@@ -15,8 +15,75 @@ void ProjectWindow::DrawWindow()
 	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 	DrawMenuBar();
-
 	UpdateMouseState();
+
+	if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
+	{
+		ImGui::OpenPopup("ContextMenu");
+	}
+
+	if (ImGui::BeginPopup("ContextMenu"))
+	{
+		if (ImGui::MenuItem("Crear carpeta"))
+		{
+			std::string newFolder = currentPath.string() + "/Nueva_Carpeta";
+			int suffix = 1;
+			while (std::filesystem::exists(newFolder))
+			{
+				newFolder = currentPath.string() + "/Nueva_Carpeta_" + std::to_string(suffix++);
+			}
+			std::filesystem::create_directory(newFolder);
+			UpdateDirectoryContent();
+		}
+
+		if (ImGui::MenuItem("Cambiar nombre", nullptr, false, !selectedPath.empty()))
+		{
+			static char renameBuffer[256];
+			strncpy_s(renameBuffer, sizeof(renameBuffer), selectedPath.filename().string().c_str(), _TRUNCATE);
+			ImGui::OpenPopup("RenamePopup");
+
+			if (ImGui::BeginPopup("RenamePopup"))
+			{
+				ImGui::Text("Renombrar carpeta:");
+				ImGui::InputText("##RenameBuffer", renameBuffer, sizeof(renameBuffer), ImGuiInputTextFlags_AutoSelectAll);
+
+				if (ImGui::Button("Aplicar"))
+				{
+					std::filesystem::path newPath = selectedPath.parent_path() / renameBuffer;
+
+					if (!std::filesystem::exists(newPath))
+					{
+						std::filesystem::rename(selectedPath, newPath);
+						UpdateDirectoryContent();
+					}
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::Button("Cancelar"))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
+			}
+		}
+
+		if (ImGui::MenuItem("Eliminar carpeta", nullptr, false, !selectedPath.empty() && std::filesystem::is_directory(selectedPath)))
+		{
+			std::filesystem::remove_all(selectedPath);
+			UpdateDirectoryContent();
+		}
+
+		ImGui::Separator();
+		if (ImGui::MenuItem("Cerrar"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
 
 	int columns = oneColumnSelected ? 1 : 2;
 	ImGui::Columns(columns, "ProjectColumns");
@@ -45,6 +112,7 @@ void ProjectWindow::DrawWindow()
 	ImGui::End();
 }
 
+
 void ProjectWindow::SetupInitialColumnWidth()
 {
 	static bool isFirstTime = true;
@@ -59,13 +127,15 @@ void ProjectWindow::UpdateDirectoryContent()
 {
 	directoryContents.clear();
 
-	bool isRootDir = (currentPath == ".");
-
 	for (const auto& entry : std::filesystem::directory_iterator(currentPath))
 	{
-		if (!isRootDir || (entry.is_directory() && (entry.path().filename() == "Assets" || (entry.path().filename() == "Engine" && showEngineContent))))
+		if (entry.is_directory())
 		{
-			directoryContents.push_back(entry);
+			std::string folderName = entry.path().filename().string();
+			if (folderName != "x64" && folderName != "Engine" && folderName != "Library")
+			{
+				directoryContents.push_back(entry);
+			}
 		}
 	}
 }
@@ -90,7 +160,11 @@ void ProjectWindow::DrawFoldersTree(const std::filesystem::path& directoryPath)
 	{
 		if (entry.is_directory())
 		{
-			hasSubfolders = true;
+			std::string folderName = entry.path().filename().string();
+			if (folderName != "x64" && folderName != "Engine" && folderName != "Library")
+			{
+				hasSubfolders = true;
+			}
 		}
 		else if (entry.is_regular_file() && oneColumnSelected)
 		{
@@ -136,9 +210,10 @@ void ProjectWindow::DrawFoldersTree(const std::filesystem::path& directoryPath)
 
 		for (const auto& entry : entries)
 		{
+			std::string folderName = entry.path().filename().string();
 			bool isValid = (!isRootDir || (entry.path().filename() == "Assets" || (entry.path().filename() == "Engine" && showEngineContent)));
 
-			if (entry.is_directory() && isValid)
+			if (entry.is_directory() && isValid && folderName != "x64" && folderName != "Engine" && folderName != "Library")
 				DrawFoldersTree(entry.path());
 			else if (oneColumnSelected && entry.is_regular_file() && isValid)
 				DrawFileItem(entry);
@@ -147,6 +222,7 @@ void ProjectWindow::DrawFoldersTree(const std::filesystem::path& directoryPath)
 		ImGui::TreePop();
 	}
 }
+
 
 void ProjectWindow::DrawFileItem(const std::filesystem::directory_entry& entry)
 {
@@ -309,6 +385,10 @@ std::string ProjectWindow::GetTruncatedFilename(const std::string& filename, flo
 
 void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entry, bool& shouldBreakLoop)
 {
+	static char renameBuffer[256];
+	static bool isRenaming = false;
+	static std::filesystem::path renamingPath;
+
 	if (ImGui::IsItemHovered())
 	{
 		if (!isItemSelected)
@@ -330,6 +410,48 @@ void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entr
 			UpdateDirectoryContent();
 			isItemSelected = false;
 			shouldBreakLoop = true;
+		}
+
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+		{
+			ImGui::OpenPopup("ContextMenu");
+		}
+	}
+
+	// Proceso de renombrado
+	if (isRenaming && selectedPath == renamingPath)
+	{
+		ImGui::OpenPopup("RenamePopup");
+
+		if (ImGui::BeginPopup("RenamePopup"))
+		{
+			ImGui::Text("Renombrar carpeta:");
+			ImGui::InputText("##RenameBuffer", renameBuffer, sizeof(renameBuffer), ImGuiInputTextFlags_AutoSelectAll);
+
+			if (ImGui::Button("Aplicar"))
+			{
+				std::filesystem::path newPath = renamingPath.parent_path() / renameBuffer;
+
+				if (!std::filesystem::exists(newPath))
+				{
+					std::filesystem::rename(renamingPath, newPath);
+					UpdateDirectoryContent();
+				}
+				isRenaming = false;
+				renamingPath.clear();
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancelar"))
+			{
+				isRenaming = false;
+				renamingPath.clear();
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
 		}
 	}
 }
