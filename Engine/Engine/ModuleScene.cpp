@@ -38,3 +38,29 @@ GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent)
 
 	return gameObject;
 }
+//Serialization
+bool ModuleScene::SaveScene(const char* filePath)
+{
+	if (!root) return false;
+
+	std::ofstream file(filePath);
+	if (!file.is_open()) return false;
+
+	cereal::JSONOutputArchive archive(file);
+	archive(CEREAL_NVP(root));
+
+	file.close();
+	return true;
+}
+//
+bool ModuleScene::LoadScene(const char* filePath)
+{
+	std::ifstream file(filePath);
+	if (!file.is_open()) return false;
+
+	cereal::JSONInputArchive archive(file);
+	archive(CEREAL_NVP(root));
+
+	file.close();
+	return true;
+}

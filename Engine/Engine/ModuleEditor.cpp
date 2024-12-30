@@ -138,12 +138,22 @@ void ModuleEditor::MainMenuBar()
 
 	if (ImGui::BeginMenu("File"))
 	{
+		if (ImGui::MenuItem("Save"))
+		{
+
+		}		
+		if (ImGui::MenuItem("Load"))
+		{
+
+		}
 		if (ImGui::MenuItem("Exit", "Alt+F4"))
 		{
 			app->exit = true;
 		}
 		ImGui::EndMenu();
 	}
+
+
 
 	if (ImGui::BeginMenu("Assets"))
 	{

@@ -1,4 +1,11 @@
 #pragma once
+//Serialization
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/access.hpp>
+#include <memory>
+//
+
 
 #include "Component.h"
 #include "ComponentTransform.h"
@@ -8,10 +15,24 @@
 #include <string>
 #include <vector>
 
+
 class GameObject
 {
 public:
-	GameObject(const char* name, GameObject* parent);
+
+	//Serialization
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(CEREAL_NVP(name),
+			CEREAL_NVP(isActive),
+			CEREAL_NVP(isEditing),
+			CEREAL_NVP(components),
+			CEREAL_NVP(children));
+	}	
+	//
+
+	GameObject(const char* name, std::shared_ptr<GameObject> parent);
 	virtual ~GameObject();
 
 	void Update();
@@ -19,19 +40,19 @@ public:
 	void Enable();
 	void Disable();
 
-	Component* AddComponent(Component* component);
-	Component* GetComponent(ComponentType type);
+	std::shared_ptr<Component> AddComponent(std::shared_ptr<Component> component);
+	std::shared_ptr<Component> GetComponent(ComponentType type);
 
 public:
-	GameObject* parent;
+	std::shared_ptr<GameObject> parent;
 	std::string name;
 
-	ComponentTransform* transform;
-	ComponentMesh* mesh;
-	ComponentMaterial* material;
+	std::shared_ptr<ComponentTransform> transform;
+	std::shared_ptr<ComponentMesh> mesh;
+	std::shared_ptr<ComponentMaterial> material;
 
-	std::vector<Component*> components;
-	std::vector<GameObject*> children;
+	std::vector<std::shared_ptr<Component>> components;
+	std::vector<std::shared_ptr<GameObject>> children;
 
 	bool isActive = true;
 	bool isEditing = false;
