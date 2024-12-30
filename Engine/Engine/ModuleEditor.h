@@ -9,6 +9,7 @@
 #include "InspectorWindow.h"
 #include "ProjectWindow.h"
 #include "SceneWindow.h"
+#include "GameWindow.h"
 #include "PerformanceWindow.h"
 #include "PreferencesWindow.h"
 #include "AboutWindow.h"
@@ -41,6 +42,7 @@ public:
 	InspectorWindow* inspectorWindow = nullptr;
 	ProjectWindow* projectWindow = nullptr;
 	SceneWindow* sceneWindow = nullptr;
+	GameWindow* gameWindow = nullptr;
 	PerformanceWindow* performanceWindow = nullptr;
 	PreferencesWindow* preferencesWindow = nullptr;
 	AboutWindow* aboutWindow = nullptr;
