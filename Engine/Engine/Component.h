@@ -1,5 +1,6 @@
 #pragma once
-
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
@@ -25,6 +26,9 @@ public:
 
 	void Enable();
 	void Disable();
+
+	virtual json Serialize() const = 0;
+	virtual void Deserialize(const json& j) = 0;
 
 public:
 	bool active;

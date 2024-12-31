@@ -63,7 +63,20 @@ void ComponentMaterial::OnEditor()
 		}
 	}
 }
+//SERGIO
+json ComponentMaterial::Serialize() const
+{
+	json j;
+	j["showCheckersTexture"] = showCheckersTexture;
+	return j;
+}
 
+void ComponentMaterial::Deserialize(const json& j)
+{
+	textureId = j["textureId"];
+	showCheckersTexture = j["showCheckersTexture"];
+}
+//
 void ComponentMaterial::AddTexture(Texture* texture)
 {
 	if (gameObject->GetComponent(ComponentType::MESH))
@@ -87,4 +100,5 @@ void ComponentMaterial::AddTexture(Texture* texture)
 		child->material->materialTexture = texture;
 		child->material->textureId = texture->textureId;
 	}
+
 }

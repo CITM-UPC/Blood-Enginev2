@@ -22,6 +22,12 @@ public:
 	Component* AddComponent(Component* component);
 	Component* GetComponent(ComponentType type);
 
+	//SERGIO
+
+	json Serialize() const;
+	void Deserialize(const json& j);
+	//
+
 public:
 	GameObject* parent;
 	std::string name;
