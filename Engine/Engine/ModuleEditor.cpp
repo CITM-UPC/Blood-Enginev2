@@ -138,6 +138,15 @@ void ModuleEditor::MainMenuBar()
 
 	if (ImGui::BeginMenu("File"))
 	{
+		if (ImGui::MenuItem("Save"))
+		{
+			app->scene->SaveScene("scene.json");
+		}
+		if (ImGui::MenuItem("Load"))
+		{
+			app->scene->LoadScene("scene.json");
+
+		}
 		if (ImGui::MenuItem("Exit", "Alt+F4"))
 		{
 			app->exit = true;

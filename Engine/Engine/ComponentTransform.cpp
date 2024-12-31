@@ -206,6 +206,22 @@ bool ComponentTransform::Decompose(const glm::float4x4& transform, glm::vec3& tr
 
 	return true;
 }
+//SERGIO
+json ComponentTransform::Serialize() const
+{
+	json j;
+	j["position"] = { position.x, position.y, position.z };
+	j["rotation"] = { rotation.x, rotation.y, rotation.z, rotation.w };
+	j["scale"] = { scale.x, scale.y, scale.z };
+	return j;
+}
+
+void ComponentTransform::Deserialize(const json& j)
+{
+	position = glm::float3(j["position"][0], j["position"][1], j["position"][2]);
+	rotation = glm::quat(j["rotation"][3], j["rotation"][0], j["rotation"][1], j["rotation"][2]);
+	scale = glm::float3(j["scale"][0], j["scale"][1], j["scale"][2]);
+}
 
 void ComponentTransform::SetButtonColor(const char* label)
 {

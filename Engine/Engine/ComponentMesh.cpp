@@ -44,7 +44,20 @@ void ComponentMesh::Update()
 
 	if (transform != nullptr) glPopMatrix();
 }
+//SERGIO
+json ComponentMesh::Serialize() const
+{
+	json j;
+	j["showVertexNormals"] = showVertexNormals;
+	j["showFaceNormals"] = showFaceNormals;
+	return j;
+}
 
+void ComponentMesh::Deserialize(const json& j)
+{
+	showVertexNormals = j["showVertexNormals"];
+	showFaceNormals = j["showFaceNormals"];
+}
 void ComponentMesh::OnEditor()
 {
 	if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))

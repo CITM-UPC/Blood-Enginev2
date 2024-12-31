@@ -30,6 +30,30 @@ bool ModuleScene::CleanUp()
 	return true;
 }
 
+
+void ModuleScene::SaveScene(const std::string& filePath)
+{
+    json sceneJson = root->Serialize();
+    std::ofstream file(filePath);
+    if (file.is_open())
+    {
+        file << sceneJson.dump(4);
+        file.close();
+    }
+}
+
+void ModuleScene::LoadScene(const std::string& filePath)
+{
+    std::ifstream file(filePath);
+    if (file.is_open())
+    {
+        json sceneJson;
+        file >> sceneJson;
+        file.close();
+        root->Deserialize(sceneJson);
+    }
+}
+
 GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent)
 {
 	GameObject* gameObject = new GameObject(name, parent);

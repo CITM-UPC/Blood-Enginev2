@@ -18,6 +18,8 @@ public:
 	void UpdateTransform();
 
 	bool Decompose(const glm::float4x4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale);
+	json Serialize() const override;
+	void Deserialize(const json& j) override;
 
 private:
 	void SetButtonColor(const char* label);

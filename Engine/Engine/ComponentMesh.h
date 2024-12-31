@@ -14,6 +14,8 @@ public:
 	void Update() override;
 	void OnEditor() override;
 
+	json Serialize() const override;
+	void Deserialize(const json& j) override;
 public:
 	Mesh* mesh;
 

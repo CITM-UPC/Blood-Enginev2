@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include "GameObject.h"
+#include <fstream>
 
 class GameObject;
 
@@ -16,7 +17,10 @@ public:
 	bool CleanUp();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
-
+	//SERGIO
+	void SaveScene(const std::string& filePath);
+	void LoadScene(const std::string& filePath);
+	//
 public:
 	GameObject* root = nullptr;
 };

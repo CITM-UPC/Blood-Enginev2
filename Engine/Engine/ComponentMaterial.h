@@ -14,6 +14,8 @@ public:
 
 	void AddTexture(Texture* texture);
 
+	json Serialize() const override;
+	void Deserialize(const json& j) override;
 public:
 	Texture* materialTexture;
 	GLuint textureId;
