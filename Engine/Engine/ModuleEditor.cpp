@@ -142,11 +142,11 @@ void ModuleEditor::MainMenuBar()
 		{
 			app->scene->SaveScene("scene.json");
 		}
-		if (ImGui::MenuItem("Load"))
-		{
-			app->scene->LoadScene("scene.json");
-
-		}
+		//Deserializing the scene is not working properly
+		//if (ImGui::MenuItem("Load"))
+		//{
+		//	app->scene->LoadScene("scene.json");
+		//}
 		if (ImGui::MenuItem("Exit", "Alt+F4"))
 		{
 			app->exit = true;

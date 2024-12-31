@@ -62,25 +62,47 @@ json GameObject::Serialize() const
 
 void GameObject::Deserialize(const json& j)
 {
-    name = j["name"];
-    isActive = j["isActive"];
-    for (const auto& componentJson : j["components"])
-    {
-        ComponentType type = static_cast<ComponentType>(componentJson["type"]);
-        Component* component = GetComponent(type);
-        if (component)
-        {
-            component->Deserialize(componentJson);
-        }
-    }
-    for (const auto& childJson : j["children"])
-    {
-        std::string childName = childJson["name"];
-        GameObject* child = new GameObject(childName.c_str(), this);
-        child->Deserialize(childJson);
-        children.push_back(child);
-    }
+	name = j["name"];
+	isActive = j["isActive"];
+	isEditing = j["isEditing"];
+
+	// Deserialize components
+	for (const auto& componentData : j["components"])
+	{
+		ComponentType type = componentData["type"];
+		Component* component = nullptr;
+
+		switch (type)
+		{
+		case ComponentType::TRANSFORM:
+			component = new ComponentTransform(this);
+			break;
+		case ComponentType::MESH:
+			component = new ComponentMesh(this);
+			break;
+		case ComponentType::MATERIAL:
+			component = new ComponentMaterial(this);
+			break;
+		default:
+			break;
+		}
+
+		if (component)
+		{
+			component->Deserialize(componentData);
+			AddComponent(component);
+		}
+	}
+
+	// Deserialize children
+	for (const auto& childData : j["children"])
+	{
+		GameObject* child = new GameObject("", this);
+		child->Deserialize(childData);
+		children.push_back(child);
+	}
 }
+
 //
 Component* GameObject::GetComponent(ComponentType type)
 {
