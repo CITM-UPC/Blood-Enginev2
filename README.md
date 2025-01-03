@@ -12,4 +12,4 @@ Made by: Hugo Castaño, Sergio Corona and Bernat Cifuentes
 
 Our GitHub project: [Blood Engine](https://github.com/CITM-UPC/Blood-Enginev2)
 
-Forked From [GitHub](https://github.com/CITM-UPC/SpectraEngine).
+Forked From [SepctraEngine](https://github.com/CITM-UPC/SpectraEngine).
